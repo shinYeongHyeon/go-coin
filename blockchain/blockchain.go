@@ -6,20 +6,20 @@ import (
 	"sync"
 )
 
-type block struct {
+type Block struct {
 	Data     string
 	Hash     string
 	PrevHash string
 }
 
 type blockchain struct {
-	blocks []*block
+	blocks []*Block
 }
 
 var b *blockchain // 변수의 인스턴스를 직접 공유하지 않음 -> Singleton Pattern
 var once sync.Once
 
-func (b *block) calculateHash() {
+func (b *Block) calculateHash() {
 	b.Hash = fmt.Sprintf("%x", sha256.Sum256([]byte(b.Data+ b.PrevHash)))
 }
 
@@ -32,14 +32,14 @@ func getLastHash() string {
 	return GetBlockChain().blocks[totalBlocks - 1].Hash
 }
 
-func createBlock(data string) *block {
-	newBlock := block {data, "", getLastHash()}
+func createBlock(data string) *Block {
+	newBlock := Block {data, "", getLastHash()}
 	newBlock.calculateHash()
 
 	return &newBlock
 }
 
-// AddBlock Add block to chain
+// AddBlock Add Block to chain
 func (b *blockchain) AddBlock(data string) {
 	b.blocks = append(b.blocks, createBlock(data))
 }
@@ -58,6 +58,6 @@ func GetBlockChain() *blockchain {
 }
 
 // AllBlocks Get All Blocks
-func (b *blockchain) AllBlocks() []*block {
+func (b *blockchain) AllBlocks() []*Block {
 	return b.blocks
 }
