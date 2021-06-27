@@ -8,7 +8,12 @@ import (
 	"net/http"
 )
 
-const port string = ":4000"
+const (
+	port 		string = ":4000"
+	templateDir string = "templates/"
+
+)
+var templates *template.Template
 
 type homeData struct {
 	PageTitle string
@@ -16,14 +21,15 @@ type homeData struct {
 }
 
 func home (writer http.ResponseWriter, request *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/home.gohtml"))
-	tmpl.Execute(writer, homeData {
+	templates.ExecuteTemplate(writer, "home", homeData {
 		PageTitle: "Home",
 		Blocks: blockchain.GetBlockChain().AllBlocks(),
 	})
 }
 
 func main() {
+	templates = template.Must(template.ParseGlob(templateDir + "pages/*.gohtml"))
+	templates = template.Must(templates.ParseGlob(templateDir + "partials/*.gohtml"))
 	http.HandleFunc("/", home)
 	fmt.Printf("Listening On http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
