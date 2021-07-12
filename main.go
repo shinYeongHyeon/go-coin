@@ -26,7 +26,8 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 	}
 	bytes, err := json.Marshal(data)
 	utils.HandleError(err)
-	fmt.Printf("%s", bytes)
+	rw.Header().Add("Content-Type", "application/json")
+	fmt.Fprintf(rw, "%s", bytes)
 
 }
 
