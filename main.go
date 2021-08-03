@@ -37,6 +37,16 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 		},
 		{
 			URL: 		 URL("/blocks"),
+			Method: 	 "GET",
+			Description: "Show Blocks",
+		},
+		{
+			URL: 		 URL("/blocks/{id}"),
+			Method: 	 "GET",
+			Description: "See A Block",
+		},
+		{
+			URL: 		 URL("/blocks"),
 			Method: 	 "POST",
 			Description: "Add A Block",
 			Payload:	 "data: string",
