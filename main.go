@@ -24,6 +24,10 @@ type URLDescription struct {
 	Payload     string `json:"payload,omitempty"`
 }
 
+type AddBlockBody struct {
+	Message string
+}
+
 func documentation(rw http.ResponseWriter, r *http.Request) {
 	data := []URLDescription {
 		{
@@ -47,12 +51,17 @@ func blocks(rw http.ResponseWriter, r *http.Request) {
 	case "GET":
 		rw.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(rw).Encode(blockchain.GetBlockChain().AllBlocks())
+	case "POST":
+		var addBlockBody AddBlockBody
+		utils.HandleError(json.NewDecoder(r.Body).Decode(&addBlockBody))
+		blockchain.GetBlockChain().AddBlock(addBlockBody.Message)
+		rw.WriteHeader(http.StatusCreated)
 	}
 }
 
 func main() {
 	http.HandleFunc("/", documentation)
 	http.HandleFunc("/blocks", blocks)
-	fmt.Printf("Listening on http://localhost%s", port)
+	fmt.Println("Listening on http://localhost%s", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
