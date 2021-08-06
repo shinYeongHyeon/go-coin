@@ -8,6 +8,7 @@ import (
 	"github.com/shinYeongHyeon/go-coin/utils"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var port string
@@ -42,7 +43,7 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 			Description: "Show Blocks",
 		},
 		{
-			URL:         url("/blocks/{id}"),
+			URL:         url("/blocks/{height}"),
 			Method:      "GET",
 			Description: "See A Block",
 		},
@@ -72,7 +73,11 @@ func blocks(rw http.ResponseWriter, r *http.Request) {
 
 func block(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
+	height, err := strconv.Atoi(vars["height"])
+	utils.HandleError(err)
+	block := blockchain.GetBlockChain().GetBlock(height)
+
+	json.NewEncoder(rw).Encode(block)
 }
 
 func Start(aPort int) {
@@ -81,7 +86,7 @@ func Start(aPort int) {
 
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
-	router.HandleFunc("/block/{id:[0-9]+}", block).Methods("GET")
+	router.HandleFunc("/block/{height:[0-9]+}", block).Methods("GET")
 	fmt.Printf("Listening on http://localhost%s\n", port)
 	log.Fatal(http.ListenAndServe(port, router))
 }
