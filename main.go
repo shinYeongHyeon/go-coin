@@ -1,9 +1,7 @@
 package main
 
-import (
-	"github.com/shinYeongHyeon/go-coin/rest"
-)
+import "github.com/shinYeongHyeon/go-coin/cli"
 
 func main() {
-	rest.Start(4000)
+	cli.Start()
 }
