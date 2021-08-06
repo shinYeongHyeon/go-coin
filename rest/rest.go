@@ -58,14 +58,12 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 			Payload:     "data: string",
 		},
 	}
-	rw.Header().Add("Content-Type", "application/json")
 	utils.HandleError(json.NewEncoder(rw).Encode(data))
 }
 
 func blocks(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		rw.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(rw).Encode(blockchain.GetBlockChain().AllBlocks())
 	case "POST":
 		var addBlockBody addBlockBody
@@ -89,10 +87,18 @@ func block(rw http.ResponseWriter, r *http.Request) {
 	encoder.Encode(block)
 }
 
+func jsonContentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Add("Content-Type", "application/json")
+		next.ServeHTTP(rw, r)
+	})
+}
+
 func Start(aPort int) {
 	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aPort)
 
+	router.Use(jsonContentTypeMiddleware)
 	router.HandleFunc("/", documentation).Methods("GET")
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
 	router.HandleFunc("/block/{height:[0-9]+}", block).Methods("GET")
