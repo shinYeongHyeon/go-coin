@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/shinYeongHyeon/go-coin/utils"
 )
@@ -15,7 +16,8 @@ var db *bolt.DB
 
 func DB() *bolt.DB {
 	if db == nil {
-		db, err := bolt.Open(dbName, 0600, nil)
+		dbPointer, err := bolt.Open(dbName, 0600, nil)
+		db = dbPointer
 		utils.HandleError(err)
 		err = db.Update(func(t *bolt.Tx) error {
 			_, err := t.CreateBucketIfNotExists([]byte(dataBucket))
@@ -31,6 +33,7 @@ func DB() *bolt.DB {
 }
 
 func SaveBlock(hash string, data []byte) {
+	fmt.Printf("Saveing Block %s\nData: %b\n", hash, data)
 	err := DB().Update(func(t *bolt.Tx) error {
 		bucket := t.Bucket([]byte(blocksBucket))
 		err := bucket.Put([]byte(hash), data)
