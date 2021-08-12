@@ -1,6 +1,8 @@
 package blockchain
 
 import (
+	"github.com/shinYeongHyeon/go-coin/db"
+	"github.com/shinYeongHyeon/go-coin/utils"
 	"sync"
 )
 
@@ -11,6 +13,10 @@ type blockchain struct {
 
 var b *blockchain // 변수의 인스턴스를 직접 공유하지 않음 -> Singleton Pattern
 var once sync.Once
+
+func (b *blockchain) persist() {
+	db.SaveBlockChain(utils.ToBytes(b))
+}
 
 func (b *blockchain) AddBlock(data string) {
 	block := createBlock(data, b.NewestHash, b.Height + 1)
