@@ -32,7 +32,7 @@ func (b *blockchain) AddBlock(data string) {
 	b.persist()
 }
 
-// BlockChain Getter BlockChain Instance
+// BlockChain Getter of BlockChain Instance
 func BlockChain() *blockchain {
 	if b == nil {
 		// 단 한번만 실행하도록 도와주는 sync 라이브러리
