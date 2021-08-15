@@ -6,7 +6,6 @@ import (
 	"github.com/shinYeongHyeon/go-coin/explorer"
 	"github.com/shinYeongHyeon/go-coin/rest"
 	"os"
-	"runtime"
 )
 
 func usage() {
@@ -14,7 +13,7 @@ func usage() {
 	fmt.Printf("Please use the following flags\n\n")
 	fmt.Printf("-port=4000 : Set the PORT of the server\n")
 	fmt.Printf("-mode=rest: Choose between 'html' and 'rest'\n")
-	runtime.Goexit()
+	os.Exit(0)
 }
 
 func Start() {
