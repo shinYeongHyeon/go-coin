@@ -60,3 +60,14 @@ func Checkpoint() []byte {
 	utils.HandleError(err)
 	return data
 }
+
+func Block(hash string) []byte {
+	var data []byte
+	err := DB().View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(blocksBucket))
+		data = bucket.Get([]byte(hash))
+		return nil
+	})
+	utils.HandleError(err)
+	return data
+}

@@ -1,8 +1,6 @@
 package blockchain
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"github.com/shinYeongHyeon/go-coin/db"
 	"github.com/shinYeongHyeon/go-coin/utils"
@@ -18,7 +16,7 @@ var b *blockchain // 변수의 인스턴스를 직접 공유하지 않음 -> Sin
 var once sync.Once
 
 func (b *blockchain) restore(data []byte) {
-	utils.HandleError(gob.NewDecoder(bytes.NewReader(data)).Decode(b))
+	utils.FromBytes(b, data)
 }
 
 func (b *blockchain) persist() {
@@ -38,17 +36,14 @@ func BlockChain() *blockchain {
 		// 단 한번만 실행하도록 도와주는 sync 라이브러리
 		once.Do(func() {
 			b = &blockchain {"", 0}
-			fmt.Printf("NewestHash: %s\nHeight: %d\n", b.NewestHash, b.Height)
 			checkpoint := db.Checkpoint()
 			if checkpoint == nil {
 				b.AddBlock("Genesis Block")
 			} else {
-				fmt.Println("Restoring...")
 				b.restore(checkpoint)
 			}
 		})
 	}
-
-	fmt.Printf("NewestHash: %s\nHeight: %d\n", b.NewestHash, b.Height)
+	fmt.Println(b.NewestHash)
 	return b
 }
