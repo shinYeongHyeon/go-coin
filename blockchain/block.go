@@ -64,6 +64,7 @@ func createBlock(data string, prevHash string, height int) *Block {
 		Height:     height,
 		Difficulty: difficulty,
 		Nonce:      0,
+		Timestamp:  int(time.Now().Unix()),
 	}
 	block.mine()
 	block.persist()
