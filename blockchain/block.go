@@ -1,9 +1,7 @@
 package blockchain
 
 import (
-	"crypto/sha256"
 	"errors"
-	"fmt"
 	"github.com/shinYeongHyeon/go-coin/db"
 	"github.com/shinYeongHyeon/go-coin/utils"
 	"strings"
@@ -45,9 +43,7 @@ func FindBlock(hash string) (*Block, error) {
 func (b *Block) mine() {
 	target := strings.Repeat("0", b.Difficulty)
 	for {
-		blockAsString := fmt.Sprint(b)
-		hash := fmt.Sprintf("%x", sha256.Sum256([]byte(blockAsString)))
-		fmt.Printf("Block as string: %s\nHash: %s\nTarget: %s\nNonce: %d\n\n", blockAsString, hash, target, b.Nonce)
+		hash := utils.Hash(b)
 		if !strings.HasPrefix(hash, target) {
 			b.Nonce++
 		} else {
