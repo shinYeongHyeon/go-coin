@@ -7,9 +7,15 @@ import (
 	"sync"
 )
 
+const (
+	defaultDifficulty int = 2
+	difficultyInterval int = 5
+)
+
 type blockchain struct {
-	NewestHash string `json:"newestHash"`
-	Height	   int    `json:"height"`
+	NewestHash        string `json:"newestHash"`
+	Height	   		  int    `json:"height"`
+	CurrentDifficulty int    `json:"currentDifficulty"`
 }
 
 var b *blockchain // 변수의 인스턴스를 직접 공유하지 않음 -> Singleton Pattern
@@ -46,12 +52,25 @@ func (b *blockchain) Blocks() []*Block {
 	return blocks
 }
 
+func (b *blockchain) difficulty() int {
+	if b.Height == 0 {
+		return defaultDifficulty
+	} else if b.Height & difficultyInterval == 0 {
+		// recalculate the difficulty
+		return 0
+	} else {
+		return b.CurrentDifficulty
+	}
+}
+
 // BlockChain Getter of BlockChain Instance
 func BlockChain() *blockchain {
 	if b == nil {
 		// 단 한번만 실행하도록 도와주는 sync 라이브러리
 		once.Do(func() {
-			b = &blockchain {"", 0}
+			b = &blockchain {
+				Height: 0,
+			}
 			checkpoint := db.Checkpoint()
 			if checkpoint == nil {
 				b.AddBlock("Genesis Block")

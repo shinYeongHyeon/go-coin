@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-const difficulty int = 2
-
 type Block struct {
 	Data       string `json:"data"`
 	Hash       string `json:"hash"`
@@ -62,7 +60,7 @@ func createBlock(data string, prevHash string, height int) *Block {
 		Hash:       "",
 		PrevHash:   prevHash,
 		Height:     height,
-		Difficulty: difficulty,
+		Difficulty: BlockChain().difficulty(),
 		Nonce:      0,
 		Timestamp:  int(time.Now().Unix()),
 	}
