@@ -19,8 +19,8 @@ func (u url) MarshalText() ([]byte, error) {
 }
 
 type urlDescription struct {
-	URL    		url    `json:"url"`
-	Method 		string `json:"method"`
+	URL         url    `json:"url"`
+	Method      string `json:"method"`
 	Description string `json:"description"`
 	Payload     string `json:"payload,omitempty"`
 }
@@ -39,6 +39,11 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 			URL:         url("/"),
 			Method:      "GET",
 			Description: "See Documentation",
+		},
+		{
+			URL:         url("/status"),
+			Method:      "GET",
+			Description: "See the Status of the Blockchain",
 		},
 		{
 			URL:         url("/blocks"),
@@ -78,7 +83,7 @@ func block(rw http.ResponseWriter, r *http.Request) {
 	block, err := blockchain.FindBlock(hash)
 	encoder := json.NewEncoder(rw)
 	if err == blockchain.ErrNotFound {
-		utils.HandleError(encoder.Encode(errorResponse { fmt.Sprint(err) }))
+		utils.HandleError(encoder.Encode(errorResponse{fmt.Sprint(err)}))
 		return
 	}
 
@@ -92,12 +97,17 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func status(rw http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(rw).Encode(blockchain.BlockChain())
+}
+
 func Start(aPort int) {
 	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aPort)
 
 	router.Use(jsonContentTypeMiddleware)
 	router.HandleFunc("/", documentation).Methods("GET")
+	router.HandleFunc("/status", status).Methods("GET")
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
 	router.HandleFunc("/blocks/{hash:[a-f0-9]+}", block).Methods("GET")
 	fmt.Printf("Listening on http://localhost%s\n", port)
