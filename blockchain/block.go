@@ -2,6 +2,7 @@ package blockchain
 
 import (
 	"errors"
+	"fmt"
 	"github.com/shinYeongHyeon/go-coin/db"
 	"github.com/shinYeongHyeon/go-coin/utils"
 	"strings"
@@ -12,7 +13,7 @@ type Block struct {
 	Data       string `json:"data"`
 	Hash       string `json:"hash"`
 	PrevHash   string `json:"prevHash,omitempty"`
-	Height	   int    `json:"height"`
+	Height     int    `json:"height"`
 	Difficulty int    `json:"difficulty"`
 	Nonce      int    `json:"nonce"`
 	Timestamp  int    `json:"timestamp"`
@@ -45,6 +46,7 @@ func (b *Block) mine() {
 	for {
 		b.Timestamp = int(time.Now().Unix())
 		hash := utils.Hash(b)
+		fmt.Printf("Target : %s\nHash:%s\nNonce: %d\n\n\n", target, hash, b.Nonce)
 		if !strings.HasPrefix(hash, target) {
 			b.Nonce++
 		} else {
@@ -60,7 +62,7 @@ func createBlock(data string, prevHash string, height int) *Block {
 		Hash:       "",
 		PrevHash:   prevHash,
 		Height:     height,
-		Difficulty: BlockChain().difficulty(),
+		Difficulty: Blockchain().difficulty(),
 		Nonce:      0,
 		Timestamp:  int(time.Now().Unix()),
 	}

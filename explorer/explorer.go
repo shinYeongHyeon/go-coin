@@ -12,24 +12,24 @@ const templateDir string = "explorer/templates/"
 
 type homeData struct {
 	PageTitle string
-	Blocks []*blockchain.Block
+	Blocks    []*blockchain.Block
 }
 
-func home (writer http.ResponseWriter, request *http.Request) {
-	templates.ExecuteTemplate(writer, "home", homeData {
+func home(writer http.ResponseWriter, request *http.Request) {
+	templates.ExecuteTemplate(writer, "home", homeData{
 		PageTitle: "Home",
-		Blocks: nil,//Blocks: blockchain.GetBlockChain().AllBlocks(),
+		Blocks:    nil, //Blocks: blockchain.GetBlockChain().AllBlocks(),
 	})
 }
 
-func add (writer http.ResponseWriter, request *http.Request) {
+func add(writer http.ResponseWriter, request *http.Request) {
 	switch request.Method {
 	case "GET":
 		templates.ExecuteTemplate(writer, "add", nil)
 	case "POST":
 		request.ParseForm()
 		data := request.Form.Get("blockData")
-		blockchain.BlockChain().AddBlock(data)
+		blockchain.Blockchain().AddBlock(data)
 		http.Redirect(writer, request, "/", http.StatusPermanentRedirect)
 	}
 }

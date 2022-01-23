@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/shinYeongHyeon/go-coin/blockchain"
+	blockchain "github.com/shinYeongHyeon/go-coin/blockchain"
 	"github.com/shinYeongHyeon/go-coin/utils"
 	"log"
 	"net/http"
@@ -68,11 +68,11 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 func blocks(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		json.NewEncoder(rw).Encode(blockchain.BlockChain().Blocks())
+		json.NewEncoder(rw).Encode(blockchain.Blockchain().Blocks())
 	case "POST":
 		var addBlockBody addBlockBody
 		utils.HandleError(json.NewDecoder(r.Body).Decode(&addBlockBody))
-		blockchain.BlockChain().AddBlock(addBlockBody.Message)
+		blockchain.Blockchain().AddBlock(addBlockBody.Message)
 		rw.WriteHeader(http.StatusCreated)
 	}
 }
@@ -98,7 +98,7 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 }
 
 func status(rw http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(rw).Encode(blockchain.BlockChain())
+	json.NewEncoder(rw).Encode(blockchain.Blockchain())
 }
 
 func Start(aPort int) {
