@@ -34,10 +34,8 @@ func FindBlock(hash string) (*Block, error) {
 	if blockBytes == nil {
 		return nil, ErrNotFound
 	}
-
 	block := &Block{}
 	block.restore(blockBytes)
-
 	return block, nil
 }
 
@@ -46,12 +44,12 @@ func (b *Block) mine() {
 	for {
 		b.Timestamp = int(time.Now().Unix())
 		hash := utils.Hash(b)
-		fmt.Printf("Target : %s\nHash:%s\nNonce: %d\n\n\n", target, hash, b.Nonce)
-		if !strings.HasPrefix(hash, target) {
-			b.Nonce++
-		} else {
+		fmt.Printf("\n\n\nTarget:%s\nHash:%s\nNonce:%d\n\n\n", target, hash, b.Nonce)
+		if strings.HasPrefix(hash, target) {
 			b.Hash = hash
 			break
+		} else {
+			b.Nonce++
 		}
 	}
 }
@@ -64,10 +62,8 @@ func createBlock(data string, prevHash string, height int) *Block {
 		Height:     height,
 		Difficulty: Blockchain().difficulty(),
 		Nonce:      0,
-		Timestamp:  int(time.Now().Unix()),
 	}
 	block.mine()
 	block.persist()
-
 	return block
 }

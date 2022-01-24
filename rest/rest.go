@@ -15,7 +15,8 @@ var port string
 type url string
 
 func (u url) MarshalText() ([]byte, error) {
-	return []byte(fmt.Sprintf("http://localhost%s%s", port, u)), nil
+	url := fmt.Sprintf("http://localhost%s%s", port, u)
+	return []byte(url), nil
 }
 
 type urlDescription struct {
@@ -48,18 +49,18 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 		{
 			URL:         url("/blocks"),
 			Method:      "GET",
-			Description: "Show Blocks",
-		},
-		{
-			URL:         url("/blocks/{hash}"),
-			Method:      "GET",
-			Description: "See A Block",
+			Description: "See All Blocks",
 		},
 		{
 			URL:         url("/blocks"),
 			Method:      "POST",
 			Description: "Add A Block",
-			Payload:     "data: string",
+			Payload:     "data:string",
+		},
+		{
+			URL:         url("/blocks/{hash}"),
+			Method:      "GET",
+			Description: "See A Block",
 		},
 	}
 	utils.HandleError(json.NewEncoder(rw).Encode(data))
@@ -68,7 +69,7 @@ func documentation(rw http.ResponseWriter, r *http.Request) {
 func blocks(rw http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		json.NewEncoder(rw).Encode(blockchain.Blockchain().Blocks())
+		utils.HandleError(json.NewEncoder(rw).Encode(blockchain.Blockchain().Blocks()))
 	case "POST":
 		var addBlockBody addBlockBody
 		utils.HandleError(json.NewDecoder(r.Body).Decode(&addBlockBody))
@@ -84,10 +85,13 @@ func block(rw http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(rw)
 	if err == blockchain.ErrNotFound {
 		utils.HandleError(encoder.Encode(errorResponse{fmt.Sprint(err)}))
-		return
+	} else {
+		utils.HandleError(encoder.Encode(block))
 	}
+}
 
-	utils.HandleError(encoder.Encode(block))
+func status(rw http.ResponseWriter, r *http.Request) {
+	utils.HandleError(json.NewEncoder(rw).Encode(blockchain.Blockchain()))
 }
 
 func jsonContentTypeMiddleware(next http.Handler) http.Handler {
@@ -97,17 +101,12 @@ func jsonContentTypeMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func status(rw http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(rw).Encode(blockchain.Blockchain())
-}
-
 func Start(aPort int) {
-	router := mux.NewRouter()
 	port = fmt.Sprintf(":%d", aPort)
-
+	router := mux.NewRouter()
 	router.Use(jsonContentTypeMiddleware)
 	router.HandleFunc("/", documentation).Methods("GET")
-	router.HandleFunc("/status", status).Methods("GET")
+	router.HandleFunc("/status", status)
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
 	router.HandleFunc("/blocks/{hash:[a-f0-9]+}", block).Methods("GET")
 	fmt.Printf("Listening on http://localhost%s\n", port)

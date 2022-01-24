@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	dbName = "blockchain.db"
-	dataBucket = "data"
+	dbName       = "blockchain.db"
+	dataBucket   = "data"
 	blocksBucket = "blocks"
-	checkpoint = "checkpoint"
+	checkpoint   = "checkpoint"
 )
 
 var db *bolt.DB
@@ -56,22 +56,20 @@ func SaveCheckpoint(data []byte) {
 
 func Checkpoint() []byte {
 	var data []byte
-	err := DB().View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(dataBucket))
+	DB().View(func(t *bolt.Tx) error {
+		bucket := t.Bucket([]byte(dataBucket))
 		data = bucket.Get([]byte(checkpoint))
 		return nil
 	})
-	utils.HandleError(err)
 	return data
 }
 
 func Block(hash string) []byte {
 	var data []byte
-	err := DB().View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte(blocksBucket))
+	DB().View(func(t *bolt.Tx) error {
+		bucket := t.Bucket([]byte(blocksBucket))
 		data = bucket.Get([]byte(hash))
 		return nil
 	})
-	utils.HandleError(err)
 	return data
 }
