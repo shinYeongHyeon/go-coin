@@ -1,6 +1,7 @@
 package blockchain
 
 import (
+	"errors"
 	"github.com/shinYeongHyeon/go-coin/utils"
 	"time"
 )
@@ -53,4 +54,22 @@ func makeCoinbaseTx(address string) *Tx {
 	tx.getId()
 
 	return &tx
+}
+
+func makeTx(from, to string, amount int) (*Tx, error) {
+	if Blockchain().BalanceByAddress(from) < amount {
+		return nil, errors.New("not enough money")
+	}
+
+	// from -> to
+}
+
+func (m *mempool) AddTx(to string, amount int) error {
+	tx, err := makeTx("den", to, amount)
+	if err != nil {
+		return err
+	}
+
+	m.Txs = append(m.Txs, tx)
+	return nil
 }
