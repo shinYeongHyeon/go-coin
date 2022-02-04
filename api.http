@@ -13,10 +13,6 @@ GET http://localhost:4000/blocks
 ### POST Blocks
 POST http://localhost:4000/blocks
 
-{
-    "message": "MINING!"
-}
-
 ### Get Block
 GET http://localhost:4000/blocks/3fd9ee8fc98866d3fb2946af3aa9d32048d60b71467f1d6c89f07b4ba77d21cc
 
@@ -28,6 +24,6 @@ POST http://localhost:4000/transactions
 
 {
     "to": "den2",
-    "amount": 102222
+    "amount": 30
 }
 
